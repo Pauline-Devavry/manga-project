@@ -1,10 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import AllMangaList from "@/components/AllMangaList";
 
-const MangaPage = () => {
+const LibraryPage = () => {
+  const [library, setLibrary] = useState([]);
+
+  // Charger la bibliothèque depuis LocalStorage au chargement de la page
+  useEffect(() => {
+    const storedLibrary = JSON.parse(localStorage.getItem("myLibrary")) || [];
+    setLibrary(storedLibrary);
+  }, []);
+
+  // Fonction pour supprimer un manga de la bibliothèque
+  const removeFromLibrary = (id) => {
+    const updatedLibrary = library.filter((manga) => manga.mal_id !== id);
+    setLibrary(updatedLibrary);
+    localStorage.setItem("myLibrary", JSON.stringify(updatedLibrary));
+  };
+
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -55,7 +69,7 @@ const MangaPage = () => {
               whileHover={{ scale: 1.1, color: "#FFDA47" }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <a href="#explore" className="font-medium">
+              <a href="/library" className="font-medium">
                 Ma collection
               </a>
             </motion.li>
@@ -71,9 +85,8 @@ const MangaPage = () => {
         </nav>
       </motion.header>
 
-      {/* Hero Section plus compact pour la page manga */}
+      {/* Hero Section */}
       <section className="relative py-12 px-6 overflow-hidden">
-        {/* Fond avec effet manga */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-br from-black via-gray-800 to-gray-900 opacity-80 z-0"
           initial={{ opacity: 0 }}
@@ -81,7 +94,6 @@ const MangaPage = () => {
           transition={{ duration: 1 }}
         />
 
-        {/* Motif en arrière-plan */}
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff33_1px,transparent_1px)] bg-[size:20px_20px] z-0" />
 
         <div className="relative z-10 max-w-4xl mx-auto">
@@ -95,20 +107,19 @@ const MangaPage = () => {
               className="text-4xl font-bold leading-tight"
               variants={fadeIn}
             >
-              Tous les <span className="text-yellow-400">Mangas</span>
+              Ma <span className="text-yellow-400">Bibliothèque</span>
             </motion.h2>
             <motion.p
               className="mt-4 text-lg text-gray-200 max-w-2xl"
               variants={fadeIn}
             >
-              Découvrez notre catalogue complet et trouvez votre prochaine série
-              préférée
+              Découvrez vos mangas préférés dans votre collection personnelle
             </motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* Section Liste des mangas */}
+      {/* Section Liste des mangas dans la bibliothèque */}
       <motion.section
         className="py-12 px-6 bg-gray-900"
         initial={{ opacity: 0 }}
@@ -116,9 +127,34 @@ const MangaPage = () => {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <div className="max-w-6xl mx-auto">
-          {/* Simple conteneur pour ton composant, sans modifier son style interne */}
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-            <AllMangaList />
+            <div className="flex flex-wrap justify-center gap-4">
+              {library.length > 0 ? (
+                library.map((manga) => (
+                  <div
+                    key={manga.mal_id}
+                    className="bg-white shadow-md rounded-lg p-2 flex flex-col items-center w-40 h-72"
+                  >
+                    <img
+                      src={manga.images.jpg.image_url}
+                      alt={manga.title}
+                      className="w-32 h-48 object-cover rounded-md"
+                    />
+                    <p className="text-sm text-black text-center font-medium mt-2 w-full break-words">
+                      {manga.title}
+                    </p>
+                    <button
+                      onClick={() => removeFromLibrary(manga.mal_id)}
+                      className="mt-2 bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600">Aucun manga dans la bibliothèque</p>
+              )}
+            </div>
           </div>
         </div>
       </motion.section>
@@ -151,4 +187,5 @@ const MangaPage = () => {
   );
 };
 
-export default MangaPage;
+export default LibraryPage;
+

@@ -15,7 +15,7 @@ export const getPopularMangas = async () => {
 export const getAllMangas = async (page = 1) => {
     try {
         const response = await axios.get(`${BASE_URL}/manga`, {
-            params: { page, limit: 25 },
+            params: { page, limit: 24 },
         });
         console.log("Response data:", response.data);
         return response.data.data; // Jikan renvoie un objet avec une clé 'data'

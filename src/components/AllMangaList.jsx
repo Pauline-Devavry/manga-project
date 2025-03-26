@@ -6,63 +6,53 @@ import { getAllMangas } from "@/app/api/jikan";
 const AllMangaList = () => {
   const [mangas, setMangas] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(10); // Assure-toi que c'est correct
 
   const fetchMangas = async (page) => {
     try {
-      const data = await getAllMangas(page);  // Utilisation de ta fonction axios
-      setMangas(data);  // Remplacer les mangas existant par ceux de la nouvelle page
-      setTotalPages(10);  // Assure-toi que ton API retourne bien cette info (ou ajuste selon la réponse)
+      const data = await getAllMangas(page);
+      setMangas(data);
     } catch (error) {
       console.error("Erreur de récupération des mangas:", error);
     }
   };
 
   useEffect(() => {
-    fetchMangas(currentPage);  // Récupère les mangas de la page actuelle
+    fetchMangas(currentPage);
   }, [currentPage]);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
-
   return (
-    <section>
-<div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-  {mangas.length > 0 ? (
-    <>
-      {console.log("Liste des mal_id:", mangas.map((m) => m.mal_id))}
-      {mangas.map((manga) => (
-        <div
-          key={manga.mal_id}
-          style={{ width: "150px", textAlign: "center" }}
+    <section className="flex flex-col items-center gap-6">
+      <div className="flex flex-wrap justify-center gap-4">
+        {mangas.length > 0 ? (
+          mangas.map((manga) => (
+            <div key={manga.mal_id} className="w-[150px] text-center">
+              <img
+                src={manga.images.jpg.image_url}
+                alt={manga.title}
+                className="w-[140px] h-auto mx-auto"
+              />
+              <p className="text-sm font-medium mt-2">{manga.title}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">Chargement...</p>
+        )}
+      </div>
+
+      <div className="flex gap-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+          disabled={currentPage <= 1}
+          className="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-50"
         >
-          <img
-            src={manga.images.jpg.image_url}
-            alt={manga.title}
-            width="100"
-          />
-          <p>{manga.title}</p>
-        </div>
-      ))}
-    </>
-  ) : (
-    <p>Chargement...</p>
-  )}
-</div>
-      <div>
-        <button onClick={handlePrevPage} disabled={currentPage <= 1}>
           Précédent
         </button>
-        <button onClick={handleNextPage} disabled={currentPage >= totalPages}>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+          disabled={currentPage >= totalPages}
+          className="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-50"
+        >
           Suivant
         </button>
       </div>
@@ -71,3 +61,4 @@ const AllMangaList = () => {
 };
 
 export default AllMangaList;
+

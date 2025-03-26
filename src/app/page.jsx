@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import TopMangaList from "@/components/TopMangaList";
@@ -43,12 +44,16 @@ export default function App() {
         animate="visible"
         variants={headerVariants}
       >
+
+        <a href="/" className="font-medium">
         <motion.h1
           className="text-3xl font-bold tracking-tight"
           whileHover={{ scale: 1.05 }}
         >
           Manga<span className="text-yellow-400">Collec'</span>
         </motion.h1>
+              </a>
+
         <nav>
           <motion.ul className="flex space-x-6" variants={staggerChildren}>
             <motion.li
@@ -63,7 +68,7 @@ export default function App() {
               whileHover={{ scale: 1.1, color: "#FFDA47" }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <a href="#explore" className="font-medium">
+              <a href="/library" className="font-medium">
                 Ma collection
               </a>
             </motion.li>
